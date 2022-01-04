@@ -10,7 +10,7 @@
 #### Programs used by this Makefile ############################################
 CC := sdcc#         C compiler: creates object files (.rel) from C files (.c)
 AS := sdas8051#     Assembler:  creates object files (.rel) from assembly files (.s)
-AR := sdcclib#      Librarian:  creates .lib
+AR := sdar#         Librarian:  creates .lib
 LD := sdld#         Linker:     creates .hex files from .rel/.lib files)
 PACKIHX := packihx# makes .hex files smaller
 MV := move#         moves files
@@ -156,13 +156,13 @@ clean:
 ifdef VERBOSE
 COMPILE_COMMAND  = $(CC) -c $< $(C_FLAGS) -o $@
 ASSEMBLE_COMMAND = $(AS) -glos $(AS_FLAGS) $<
-ARCHIVE_COMMAND  = $(AR) $@ $^
+ARCHIVE_COMMAND  = $(AR) -rc $@ $^
 LINK_COMMAND     = $(CC) $(LD_FLAGS) libraries/xpage/xpage.rel $^
 else
 V=@
 COMPILE_COMMAND  = @echo Compiling  $@ && $(CC) -c $< $(C_FLAGS) -o $@
 ASSEMBLE_COMMAND = @echo Assembling $@ && $(AS) -glos $(AS_FLAGS) $<
-ARCHIVE_COMMAND  = @echo Creating   $@ && $(AR) $@ $^
+ARCHIVE_COMMAND  = @echo Creating   $@ && $(AR) -rc $@ $^
 LINK_COMMAND     = @echo Linking    $@ && $(CC) $(LD_FLAGS) libraries/xpage/xpage.rel $^
 endif
 
@@ -170,6 +170,7 @@ endif
 
 %.rel: %.c
 	$(COMPILE_COMMAND)
+	$(V)dos2unix -q $@
 
 %.rel: %.s
 	$(ASSEMBLE_COMMAND)
