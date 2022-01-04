@@ -20,6 +20,10 @@
         ".solidarity": "json",
         ".env": "dotenv",
         "*.c": "c",
-        "lint.h": "c"
+        "lint.h": "c",
+        "typeinfo": "cpp",
+        "random.h": "c",
+        "stdio.h": "c",
+        "usb_com.h": "c"
     }
 }
