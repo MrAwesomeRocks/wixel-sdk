@@ -24,6 +24,10 @@
         "typeinfo": "cpp",
         "random.h": "c",
         "stdio.h": "c",
-        "usb_com.h": "c"
+        "usb_com.h": "c",
+        "*.wxl": "plaintext",
+        "wixel.h": "c",
+        "old_putchar.h": "c",
+        "adc.h": "c"
     }
 }

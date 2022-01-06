@@ -93,10 +93,10 @@ void usbPoll()
     {
         enableUsbPullup();
         SLEEP |= (1<<7);            // Enable the USB module (SLEEP.USB_EN = 1).
-        __asm nop __endasm;         // Datasheet doesn't say so, but David suspects we need some NOPs here before writing to USB registers.
-        __asm nop __endasm;
-        __asm nop __endasm;
-        __asm nop __endasm;
+        __asm__("nop");         // Datasheet doesn't say so, but David suspects we need some NOPs here before writing to USB registers.
+        __asm__("nop");
+        __asm__("nop");
+        __asm__("nop");
         usbDeviceState = USB_STATE_POWERED;
 
         basicUsbInit();
@@ -574,7 +574,7 @@ void usbSleep()
 
         // Put the device to sleep by following the recommended pseudo code in the datasheet section 12.1.3:
         SLEEP = (SLEEP & ~3) | 1;    // SLEEP.MODE = 1 : Selects Power Mode 1 (PM1).
-        __asm nop __endasm; __asm nop __endasm; __asm nop __endasm;
+        __asm__("nop"); __asm__("nop"); __asm__("nop");
         if (SLEEP & 3)
         {
             P1_0 = 1;

@@ -124,7 +124,7 @@ void boardStartBootloader()
     P0SEL = P1SEL = P2SEL = 0;
 
     delayMs(100);       // Delay to give the USB host a chance to detect that we disconnected.
-    __asm ljmp 6 __endasm;
+    __asm__("ljmp 6");
 }
 
 void boardStartBootloaderIfNeeded()
