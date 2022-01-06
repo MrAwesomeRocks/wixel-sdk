@@ -6,7 +6,7 @@
 #include <cc2511_map.h>
 #include <cc2511_types.h>
 
-#if defined(__CDT_PARSER__)
+#if defined(__CDT_PARSER__) || defined(__VSC_PARSER__)
 #define UART0
 #endif
 
