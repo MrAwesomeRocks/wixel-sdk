@@ -28,6 +28,8 @@
         "*.wxl": "plaintext",
         "wixel.h": "c",
         "old_putchar.h": "c",
-        "adc.h": "c"
+        "adc.h": "c",
+        "radio_com.h": "c",
+        "radio_link.h": "c"
     }
 }
