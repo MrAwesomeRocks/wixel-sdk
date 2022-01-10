@@ -29,38 +29,18 @@
 
 #include <uart1.h>
 
+#include "errors.h"
+#include "commands.h"
+
 /* PARAMETERS *****************************************************************/
+
+int32 CODE param_framing_error_ms = 0;
 
 /** The baud rate to run UART 1 at. */
 int32 CODE param_baud_rate = 9600;
 
-/** Approximate number of milliseconds to disable UART's receiver for after a
- * framing error is encountered.
- * Valid values are 0-250.
- * A value of 0 disables the feature (the UART's receiver will not be disabled).
- * The actual number of milliseconds that the receiver is disabled for will be
- * between param_framing_error_ms and param_framing_error_ms + 1.
- */
-int32 CODE param_framing_error_ms = 0;
 
 /* GLOBAL VARIABLES ***********************************************************/
-
-/** This bit is 1 if the UART's receiver has been disabled due to a framing error.
- * This bit should be equal to !U1CSR.RE, but we need this variable because we
- * don't want to be reading U1CSR in the main loop, because reading it might
- * cause the FE or ERR bits to be cleared and then the ISR
- * would not receive notice of those errors.
- */
-BIT uartRxDisabled = 0;
-
-/** Set to 1 if a framing error has occurred to detect error states. */
-BIT framingErrorActive = 0;
-
-/** Set to one if an error has occurred within the last 100 ms. */
-BIT errorOccurredRecently = 0;
-
-/** The last time the Wixel encountered a serial communication error. */
-uint8 lastErrorTime;
 
 /* FUNCTIONS ******************************************************************/
 
@@ -139,64 +119,12 @@ void ioTxSignals(uint8 signals)
 {
 }
 
-void errorOccurred()
+/** Checks for new bytes from the radio and process them */
+void processBytesFromRadio()
 {
-    lastErrorTime = (uint8)getMs();
-    errorOccurredRecently = 1;
-}
-
-void errorService()
-{
-    static uint8 lastRxLowTime;
-
-    if (uart1RxBufferFullOccurred)
+    while (radioComRxAvailable() && uart1TxAvailable())
     {
-        uart1RxBufferFullOccurred = 0;
-        errorOccurred();
-    }
-
-    if (uart1RxFramingErrorOccurred)
-    {
-        uart1RxFramingErrorOccurred = 0;
-
-        // A framing error occurred.
-        framingErrorActive = 1;
-        errorOccurred();
-
-        if (param_framing_error_ms > 0)
-        {
-            // Disable the UART's receiver.
-            U1CSR &= ~0x40; // U1CSR.RE = 0.  Disables reception of bytes on the UART.
-            uartRxDisabled = 1;
-            lastRxLowTime = (uint8)getMs(); // Initialize lastRxLowTime even if the line isn't low right now.
-        }
-    }
-
-    if (framingErrorActive)
-    {
-        if (!isPinHigh(17))
-        {
-            errorOccurred();
-        }
-        else
-        {
-            framingErrorActive = 0;
-        }
-    }
-
-    if (uartRxDisabled)
-    {
-        if (!isPinHigh(17))
-        {
-            // The line is low.
-            lastRxLowTime = (uint8)getMs();
-        }
-        else if ((uint8)(getMs() - lastRxLowTime) > param_framing_error_ms)
-        {
-            // The line has been high for long enough, so re-enable the receiver.
-            U1CSR |= 0x40;
-            uartRxDisabled = 0;
-        }
+        processByte(radioComRxReceiveByte());
     }
 }
 
