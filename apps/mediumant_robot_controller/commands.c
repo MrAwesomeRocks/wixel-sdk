@@ -1,10 +1,10 @@
+#include <uart1.h>
+#include <radio_com.h>
+
 #include "commands.h"
 #include "errors.h"
-
-/* COMMANDS *******************************************************************/
-#define COMMAND_MOVE_LEG 0x81
-#define COMMAND_GET_LEG_POSITION 0x82
-#define COMMAND_STOP 0xAA
+#include "servo.h"
+#include "reports.h"
 
 /* GLOBAL VARIABLES ***********************************************************/
 
@@ -20,7 +20,7 @@ uint8 dataBytes[32];
 uint8 dataBytesLeft = 0;
 
 /** The number of data bytes received so far for the current binary command.
- * If dataBytesLeft==0, this is undefined. */
+ * If dataBytesLeft == 0, this is undefined. */
 uint8 dataBytesReceived;
 
 /* FUNCTIONS ******************************************************************/
@@ -30,14 +30,23 @@ void executeCommand()
 {
     switch (commandByte)
     {
-    case COMMAND_MOVE_LEG:
-        /* code */
+    case COMMAND_MOVE_LEGS:
+        for (uint8 i = 1; i < dataBytes[0]; i += 2)
+        {
+            setLegPosition(dataBytes[i], dataBytes[i + 1]);
+        }
         break;
 
-    case COMMAND_GET_LEG_POSITION:
+    case COMMAND_GET_LEGS_POSITION:
+        reportServoPositions(dataBytes[0]);
         break;
 
     case COMMAND_STOP:
+        for (uint8 i = 0; i < 6; ++i)
+        {
+            setLegPosition(i, getLegPosition(i));
+        }
+        clearServoCommandBuffer();
         break;
     }
 }
@@ -60,11 +69,8 @@ void processByte(uint8 byteReceived)
         // Look at the command byte to see if it is valid and how many bytes to expect
         switch (commandByte)
         {
-        case COMMAND_MOVE_LEG:
-            dataBytesLeft = 2;
-            break;
-
-        case COMMAND_GET_LEG_POSITION:
+        case COMMAND_MOVE_LEGS:
+        case COMMAND_GET_LEGS_POSITION:
             dataBytesLeft = 1;
             break;
 
@@ -88,8 +94,17 @@ void processByte(uint8 byteReceived)
     {
         // Received a parameter byte
         dataBytes[dataBytesReceived] = byteReceived;
-        dataBytesLeft--;
         dataBytesReceived++;
+
+        if (commandByte == COMMAND_MOVE_LEGS)
+        {
+            // Second parameter is the number of bytes left
+            dataBytesLeft = byteReceived * 2;
+        }
+        else
+        {
+            dataBytesLeft--;
+        }
 
         if (dataBytesLeft == 0)
         {
@@ -101,5 +116,13 @@ void processByte(uint8 byteReceived)
     {
         // Byte that's not part of a command or a data byte, ERROR!
         errorOccurred();
+    }
+}
+
+void radioCommandService()
+{
+    while (radioComRxAvailable() && uart1TxAvailable())
+    {
+        processByte(radioComRxReceiveByte());
     }
 }

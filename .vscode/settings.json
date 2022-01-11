@@ -30,6 +30,12 @@
         "old_putchar.h": "c",
         "adc.h": "c",
         "radio_com.h": "c",
-        "radio_link.h": "c"
+        "radio_link.h": "c",
+        "errors.h": "c",
+        "commands.h": "c",
+        "cstdio": "c",
+        "uart1.h": "c",
+        "stdarg.h": "c",
+        "com.h": "c"
     }
 }

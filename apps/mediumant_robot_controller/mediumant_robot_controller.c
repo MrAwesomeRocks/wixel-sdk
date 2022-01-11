@@ -31,19 +31,22 @@
 
 #include "errors.h"
 #include "commands.h"
+#include "servo.h"
+#include "reports.h"
 
 /* PARAMETERS *****************************************************************/
 
 int32 CODE param_framing_error_ms = 0;
+int32 CODE param_servo_update_ms = 100;
 
 /** The baud rate to run UART 1 at. */
 int32 CODE param_baud_rate = 9600;
-
 
 /* GLOBAL VARIABLES ***********************************************************/
 
 /* FUNCTIONS ******************************************************************/
 
+/** Update the Wixel's LEDs to show program status. */
 void updateLeds()
 {
     static BIT dimYellowLed = 0;
@@ -101,64 +104,37 @@ void updateLeds()
     LED_RED(errorOccurredRecently || uartRxDisabled);
 }
 
-/* Returns the logical values of the input control signal pins.
-   Bit 0 is DSR.
-   Bit 1 is CD. */
-uint8 ioRxSignals()
-{
-    uint8 signals = 0;
 
-    return signals;
-}
-
-/* Sets the logical values of the output control signal pins.
-   This should be called frequently (not just when the values change).
-   Bit 0 is DTR.
-   Bit 1 is RTS. */
-void ioTxSignals(uint8 signals)
-{
-}
-
-/** Checks for new bytes from the radio and process them */
-void processBytesFromRadio()
-{
-    while (radioComRxAvailable() && uart1TxAvailable())
-    {
-        processByte(radioComRxReceiveByte());
-    }
-}
-
-void uartToRadioService()
-{
-    // Data
-    while (uart1RxAvailable() && radioComTxAvailable())
-    {
-        radioComTxSendByte(uart1RxReceiveByte());
-    }
-
-    while (radioComRxAvailable() && uart1TxAvailable())
-    {
-        uart1TxSendByte(radioComRxReceiveByte());
-    }
+// void uartToRadioService()
+// {
+    // Info from the servo controller
+    // while (uart1RxAvailable() && radioComTxAvailable())
+    // {
+    //     radioComTxSendByte(uart1RxReceiveByte());
+    // }
 
     // Control Signals.
-    ioTxSignals(radioComRxControlSignals());
-    radioComTxControlSignals(ioRxSignals());
-}
+    // ioTxSignals(radioComRxControlSignals());
+    // radioComTxControlSignals(ioRxSignals());
+// }
 
 void main()
 {
     systemInit();
 
-    ioTxSignals(0);
+    // ioTxSignals(0);
 
     usbInit();
 
     uart1Init();
     uart1SetBaudRate(param_baud_rate);
 
-    radioComRxEnforceOrdering = 1;
+    // radioComRxEnforceOrdering = 1;
     radioComInit();
+
+    // Enable pull-down resistors for all pins on Port 0
+    P2INP |= (1 << 5); // PDUP0 = 1: Pull-downs on Port 0.
+    P0INP = 0;         // This line should not be necessary because P0SEL is 0 on reset.
 
     while (1)
     {
@@ -167,8 +143,9 @@ void main()
         errorService();
 
         radioComTxService();
-
         usbComService();
-        uartToRadioService();
+
+        radioCommandService();
+        reportsService();
     }
 }
