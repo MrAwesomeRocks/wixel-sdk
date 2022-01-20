@@ -135,7 +135,7 @@ void main()
         usbComService();
 
         radioCommandService();
-        reportsService();
         servoService();
+        reportsService();
     }
 }
