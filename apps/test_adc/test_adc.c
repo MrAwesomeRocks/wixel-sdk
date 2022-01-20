@@ -8,7 +8,7 @@ as a bar graph.
 
 == Parameters ==
 
-input_mode:  Specifies whether to enable internal pull-down resistors, 
+input_mode:  Specifies whether to enable internal pull-down resistors,
     enable internal pull-up resistors, or just let the analog lines float.
      1 = Pull-ups
      0 = Float (default)
@@ -78,7 +78,9 @@ int putchar(int c)
 void printBar(const char * name, uint16 adcResult)
 {
     uint8 i, width;
-    printf("%-4s %4d mV |", name, adcConvertToMillivolts(adcResult));
+    uint16 degrees = ((uint32)(adcConvertToMillivolts(adcResult) - 100) * 360) / 2901;
+
+    printf("%-4s %4d deg |", name, degrees);
     width = adcResult >> 5;
     for(i = 0; i < width; i++){ putchar('#'); }
     for(; i < 63; i++){ putchar(' '); }
@@ -105,7 +107,7 @@ void sendReportIfNeeded()
 
         for(i = 0; i < 6; i++)
         {
-            result[i] = adcRead(i);
+            result[i] = adcRead(i) * 2;
         }
 
         if (param_bar_graph)

@@ -14,8 +14,8 @@
  * TODO: make the heartbeat blinks on the Wixels be synchronized (will require
  *       major changes to the radio_link library)
  * TODO: turn on red LED or flash it if the Wixel is in a mode that requires USB
- *       but has not reached the USB Configured State (this avoids the problem of
- *       having 0 LEDs on when the Wixel is in USB-UART mode and self powered)
+ *       but has not reached the USB Configured State (this avoids the problem
+ * of having 0 LEDs on when the Wixel is in USB-UART mode and self powered)
  */
 
 /* DEPENDENCIES ***************************************************************/
@@ -29,15 +29,15 @@
 
 #include <uart1.h>
 
-#include "errors.h"
 #include "commands.h"
-#include "servo.h"
+#include "errors.h"
 #include "reports.h"
+#include "servo.h"
 
 /* PARAMETERS *****************************************************************/
 
 int32 CODE param_framing_error_ms = 0;
-int32 CODE param_servo_update_ms = 100;
+int32 CODE param_servo_update_ms = 50;
 
 /** The baud rate to run UART 1 at. */
 int32 CODE param_baud_rate = 9600;
@@ -57,65 +57,53 @@ void updateLeds()
 
     now = (uint16)getMs();
 
-    if (!radioLinkConnected())
-    {
+    if (!radioLinkConnected()) {
         // We have not connected to another device wirelessly yet, so do a
         // 50% blink with a period of 1024 ms.
         LED_YELLOW(now & 0x200 ? 1 : 0);
-    }
-    else
-    {
+    } else {
         // We have connected.
 
-        if ((now & 0x3FF) <= 20)
-        {
+        if ((now & 0x3FF) <= 20) {
             // Do a heartbeat every 1024ms for 21ms.
             LED_YELLOW(1);
-        }
-        else if (dimYellowLed)
-        {
+        } else if (dimYellowLed) {
             static uint8 DATA count;
             count++;
             LED_YELLOW((count & 0x7) == 0);
-        }
-        else
-        {
+        } else {
             LED_YELLOW(0);
         }
     }
 
-    if (radioLinkActivityOccurred)
-    {
+    if (radioLinkActivityOccurred) {
         radioLinkActivityOccurred = 0;
         dimYellowLed ^= 1;
         lastRadioActivityTime = now;
     }
 
-    if ((uint16)(now - lastRadioActivityTime) > 32)
-    {
+    if ((uint16)(now - lastRadioActivityTime) > 32) {
         dimYellowLed = 0;
     }
 
-    if ((uint8)(now - lastErrorTime) > 100)
-    {
+    if ((uint8)(now - lastErrorTime) > 100) {
         errorOccurredRecently = 0;
     }
 
     LED_RED(errorOccurredRecently || uartRxDisabled);
 }
 
-
 // void uartToRadioService()
 // {
-    // Info from the servo controller
-    // while (uart1RxAvailable() && radioComTxAvailable())
-    // {
-    //     radioComTxSendByte(uart1RxReceiveByte());
-    // }
+// Info from the servo controller
+// while (uart1RxAvailable() && radioComTxAvailable())
+// {
+//     radioComTxSendByte(uart1RxReceiveByte());
+// }
 
-    // Control Signals.
-    // ioTxSignals(radioComRxControlSignals());
-    // radioComTxControlSignals(ioRxSignals());
+// Control Signals.
+// ioTxSignals(radioComRxControlSignals());
+// radioComTxControlSignals(ioRxSignals());
 // }
 
 void main()
@@ -128,16 +116,17 @@ void main()
 
     uart1Init();
     uart1SetBaudRate(param_baud_rate);
+    uart1TxSendByte(0xAA); // Start serial connection with Micro Maestro
+    uart1TxSendByte(0xA1); // Clear errors on the Maestro
 
     // radioComRxEnforceOrdering = 1;
     radioComInit();
 
     // Enable pull-down resistors for all pins on Port 0
     P2INP |= (1 << 5); // PDUP0 = 1: Pull-downs on Port 0.
-    P0INP = 0;         // This line should not be necessary because P0SEL is 0 on reset.
+    P0INP = 0; // This line should not be necessary because P0SEL is 0 on reset.
 
-    while (1)
-    {
+    while (1) {
         boardService();
         updateLeds();
         errorService();
@@ -147,5 +136,6 @@ void main()
 
         radioCommandService();
         reportsService();
+        servoService();
     }
 }

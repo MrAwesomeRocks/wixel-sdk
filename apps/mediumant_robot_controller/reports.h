@@ -1,5 +1,5 @@
-#include "wixel.h"
 #include "servo.h"
+#include "wixel.h"
 
 #ifndef __REPORTS_H__
 #define __REPORTS_H__

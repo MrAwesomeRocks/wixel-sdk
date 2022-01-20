@@ -24,11 +24,11 @@ extern uint8 lastErrorTime;
  */
 extern int32 CODE param_framing_error_ms;
 
-/** This bit is 1 if the UART's receiver has been disabled due to a framing error.
- * This bit should be equal to !U1CSR.RE, but we need this variable because we
- * don't want to be reading U1CSR in the main loop, because reading it might
- * cause the FE or ERR bits to be cleared and then the ISR
- * would not receive notice of those errors.
+/** This bit is 1 if the UART's receiver has been disabled due to a framing
+ * error. This bit should be equal to !U1CSR.RE, but we need this variable
+ * because we don't want to be reading U1CSR in the main loop, because reading
+ * it might cause the FE or ERR bits to be cleared and then the ISR would not
+ * receive notice of those errors.
  */
 extern BIT uartRxDisabled;
 
