@@ -1,4 +1,6 @@
 #include "errors.h"
+#include "commands.h"
+#include "reports.h"
 
 #include <radio_com.h>
 #include <radio_link.h>
@@ -11,10 +13,11 @@ BIT errorOccurredRecently = 0;
 uint8 lastErrorTime;
 BIT uartRxDisabled = 0;
 
-void errorOccurred()
+void errorOccurred(uint8 code)
 {
     lastErrorTime = (uint8)getMs();
     errorOccurredRecently = 1;
+    reportByte(ERROR_RESPONSE, code);
 }
 
 void errorService()
@@ -23,7 +26,7 @@ void errorService()
 
     if (uart1RxBufferFullOccurred) {
         uart1RxBufferFullOccurred = 0;
-        errorOccurred();
+        errorOccurred(0x01);
     }
 
     if (uart1RxFramingErrorOccurred) {
@@ -31,7 +34,7 @@ void errorService()
 
         // A framing error occurred.
         framingErrorActive = 1;
-        errorOccurred();
+        errorOccurred(0x02);
 
         if (param_framing_error_ms > 0) {
             // Disable the UART's receiver.
@@ -45,7 +48,7 @@ void errorService()
 
     if (framingErrorActive) {
         if (!isPinHigh(17)) {
-            errorOccurred();
+            errorOccurred(0x03);
         } else {
             framingErrorActive = 0;
         }

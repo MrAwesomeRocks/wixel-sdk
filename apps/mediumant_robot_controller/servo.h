@@ -4,8 +4,7 @@
 #define __SERVO_H__
 
 // Legs of the robot
-enum robotLeg
-{
+enum robotLeg {
     LEG_RIGHT_FRONT,
     LEG_RIGHT_MIDDLE,
     LEG_RIGHT_BACK,
@@ -21,7 +20,16 @@ void setLegPosition(enum robotLeg leg, uint16 degrees);
 uint16 getLegPosition(enum robotLeg leg);
 
 /** Clear the servo command buffer. */
-void clearServoCommandBuffer();
+inline void clearServoCommandBuffer();
+
+/** Stop all the servos.
+ *
+ * Should probably also call clearServoCommandBuffer() before this.
+ */
+inline void stopAllServos();
+
+/** Renable the servos. */
+inline void enableServos();
 
 /** Update the servos. Should be called often. */
 void servoService();

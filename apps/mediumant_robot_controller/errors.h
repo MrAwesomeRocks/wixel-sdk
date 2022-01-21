@@ -3,8 +3,11 @@
 #ifndef __ERRORS_H__
 #define __ERRORS_H__
 
-/** Call to indicate that an error has occurred */
-void errorOccurred();
+/** Call to indicate that an error has occurred.
+ *
+ * Pass in a code to log to the radio.
+ */
+void errorOccurred(uint8 code);
 
 /** Call in the main loop to process errors. */
 void errorService();
