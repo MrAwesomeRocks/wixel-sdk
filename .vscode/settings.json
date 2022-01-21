@@ -36,6 +36,7 @@
         "cstdio": "c",
         "uart1.h": "c",
         "stdarg.h": "c",
-        "com.h": "c"
+        "com.h": "c",
+        "reports.h": "c"
     }
 }
