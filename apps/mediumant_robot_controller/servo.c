@@ -1,4 +1,5 @@
 #include "servo.h"
+#include "errors.h"
 
 #include <uart1.h>
 
@@ -47,6 +48,9 @@ int16 legTargets[6] = {10, 160, 10, 160, 10, 160};
 /** If the servos are enabled. */
 BIT servosEnabled = 1;
 
+/** Set to 1 when there is a servo turned on. */
+BIT isMoving = 0;
+
 /* FUNCTIONS
  * ******************************************************************/
 
@@ -68,11 +72,17 @@ inline void stopAllServos()
         SET_SERVO(i, SERVO_SPEED_STOP);
     }
     servosEnabled = 0;
+    isMoving = 0;
 }
 
 inline void enableServos()
 {
     servosEnabled = 1;
+}
+
+inline BIT isRobotMoving()
+{
+    return isMoving;
 }
 
 uint16 getLegPosition(enum robotLeg leg)
@@ -109,6 +119,9 @@ void servoService()
         // Read the leg positions
         adcSetMillivoltCalibration(adcReadVddMillivolts());
 
+        // Turn this off for now
+        isMoving = 0;
+
         // Set the servos
         for (uint8 i = 0; i < 6; i++) {
             int16 legPosition = getLegPosition(i);
@@ -119,6 +132,8 @@ void servoService()
                     // Need to wrap around
                     if (previousServoSpeeds[i] != 'f') {
                         previousServoSpeeds[i] = 'f';
+                        isMoving = 1;
+
                         SET_SERVO(i, SERVO_SPEED(i, FAST));
                     }
                 } else {
@@ -129,6 +144,8 @@ void servoService()
                     }
                 }
             } else {
+                isMoving = 1;
+
                 // Before the leg target, need to keep going
                 if (legPosition > 270 || legPosition < 90) {
                     if (previousServoSpeeds[i] != 'f') {
@@ -143,6 +160,8 @@ void servoService()
                 }
             }
         }
+    } else if (!servosEnabled) {
+        LED_RED(1);
     }
 
     // Send the commands to the servo controller in chunks

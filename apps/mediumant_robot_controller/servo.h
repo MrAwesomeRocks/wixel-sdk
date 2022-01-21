@@ -31,6 +31,9 @@ inline void stopAllServos();
 /** Renable the servos. */
 inline void enableServos();
 
+/** See if the robot has a moving servo. */
+inline BIT isRobotMoving();
+
 /** Update the servos. Should be called often. */
 void servoService();
 

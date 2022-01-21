@@ -49,6 +49,10 @@ void executeCommand()
             reportServoPositions(dataBytes[0]);
             break;
 
+        case COMMAND_IS_MOVING:
+            reportByte(RESPONSE_COMMAND(COMMAND_IS_MOVING), isRobotMoving());
+            break;
+
         case COMMAND_STOP:
             clearServoCommandBuffer();
             stopAllServos();
@@ -82,6 +86,7 @@ void processByte(uint8 byteReceived)
                 break;
 
             case COMMAND_STOP:
+            case COMMAND_IS_MOVING:
                 dataBytesLeft = 0;
                 break;
 
