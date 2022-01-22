@@ -1,3 +1,5 @@
+#include <radio_com.h>
+
 #include "robot_control.h"
 
 /* GLOBAL VARIABLES **********************************************************/
@@ -56,4 +58,23 @@ inline void stopRobot()
 {
     setDirection(0);
     putRobotCommand(0xAA);
+}
+
+void robotControlService()
+{
+    // TODO: Generate a sequence to have the robot walk
+
+    // Send the commands to radio in chunks.
+    if (robotCommandLength > 0) {
+        while (radioComTxAvailable() && robotCommandBytesSent < robotCommandLength) {
+            radioComTxSendByte(robotCommandBuffer[robotCommandBytesSent]);
+            robotCommandBytesSent++;
+        }
+
+        if (robotCommandBytesSent == robotCommandLength) {
+            // We've sent the whole report
+            robotCommandLength = 0;
+            robotCommandBytesSent = 0;
+        }
+    }
 }

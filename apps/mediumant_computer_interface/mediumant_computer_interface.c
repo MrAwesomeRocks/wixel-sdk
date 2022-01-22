@@ -29,9 +29,10 @@
 
 #include <uart1.h>
 
+#include "commands.h"
 #include "errors.h"
 #include "reports.h"
-#include "commands.h"
+#include "robot_control.h"
 
 /** Parameters ****************************************************************/
 
@@ -106,5 +107,6 @@ void main()
 
         usbCommandService();
         reportsService();
+        robotControlService();
     }
 }

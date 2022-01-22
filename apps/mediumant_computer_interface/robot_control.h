@@ -24,7 +24,7 @@ void setSpeed(uint8 speed);
 /** Set the robot's direction. */
 void setDirection(uint8 direction);
 
-/** Controlls the robot based on speed. Should be called often. */
+/** Controlls the robot based on speed and direction. Should be called often. */
 void robotControlService();
 
 #endif // __ROBOT_CONTROL_H__
