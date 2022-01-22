@@ -1,8 +1,8 @@
 #include "reports.h"
 #include "ansi.h"
 
-#include <usb_com.h>
 #include <stdio.h>
+#include <usb_com.h>
 
 /* VARIABLES ******************************************************************/
 
@@ -39,7 +39,11 @@ int putchar(int c)
 
 void reportError(enum errorCode code)
 {
-    printf(B_RED WHT_B "ERROR!" RESET " Code %X.\a\n", code);
+    if (param_terminal_colors) {
+        printf(B_RED WHT_B "ERROR!" RESET " Code 0x%X.\a\n\r", code);
+    } else {
+        printf("ERROR! Code 0x%X.\a\n\r", code);
+    }
 
     switch (code) {
         case ERROR_UART_OVERFLOW:

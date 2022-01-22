@@ -11,4 +11,7 @@ void reportError(enum errorCode code);
 /** Send any outstanding reports. Should be called often. */
 void reportsService();
 
+/** Whether to send ANSI color codes with the reports. */
+extern int32 CODE param_terminal_colors;
+
 #endif // __REPORTS_H__

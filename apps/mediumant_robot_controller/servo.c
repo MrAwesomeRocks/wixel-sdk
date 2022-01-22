@@ -3,8 +3,7 @@
 
 #include <uart1.h>
 
-/* DEFINES
- * ********************************************************************/
+/* DEFINES *******************************************************************/
 
 // Servo motor angle read config
 #define SERVO_ADC_MIN 100
@@ -30,8 +29,7 @@
         putCommand((speed >> 7) & 0x7f);                                       \
     }
 
-/* GLOBAL VARIABLES
- * ***********************************************************/
+/* GLOBAL VARIABLES **********************************************************/
 
 /** A big buffer of commands to send to the servo controller. */
 uint8 XDATA servoCommandBuffer[128];
@@ -51,8 +49,7 @@ BIT servosEnabled = 1;
 /** Set to 1 when there is a servo turned on. */
 BIT isMoving = 0;
 
-/* FUNCTIONS
- * ******************************************************************/
+/* FUNCTIONS *****************************************************************/
 
 static int putCommand(int c)
 {

@@ -37,6 +37,7 @@
         "uart1.h": "c",
         "stdarg.h": "c",
         "com.h": "c",
-        "reports.h": "c"
+        "reports.h": "c",
+        "ostream": "c"
     }
 }

@@ -31,10 +31,12 @@
 
 #include "errors.h"
 #include "reports.h"
+#include "commands.h"
 
 /** Parameters ****************************************************************/
 
 int32 CODE param_framing_error_ms = 0;
+int32 CODE param_terminal_colors = 0;
 
 /** Global Variables **********************************************************/
 
@@ -83,18 +85,6 @@ void updateLeds()
     LED_RED(errorOccurredRecently || uartRxDisabled);
 }
 
-void usbToRadioService()
-{
-    // Data
-    while (usbComRxAvailable() && radioComTxAvailable()) {
-        radioComTxSendByte(usbComRxReceiveByte());
-    }
-
-    while (radioComRxAvailable() && usbComTxAvailable()) {
-        usbComTxSendByte(radioComRxReceiveByte());
-    }
-}
-
 void main()
 {
     systemInit();
@@ -114,7 +104,7 @@ void main()
         radioComTxService();
         usbComService();
 
-        usbToRadioService();
+        usbCommandService();
         reportsService();
     }
 }
