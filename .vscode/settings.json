@@ -41,5 +41,15 @@
         "ostream": "c",
         "time.h": "c",
         "cc2511_types.h": "c"
+    },
+    "files.exclude": {
+        "**/*.adb": true,
+        "**/*.d": true,
+        "**/*.rel": true,
+        "**/*.rst": true,
+        "**/*.cdb": true,
+        "**/*.hex": true,
+        "**/*.lk": true,
+        "**/*.omf": true,
     }
 }
