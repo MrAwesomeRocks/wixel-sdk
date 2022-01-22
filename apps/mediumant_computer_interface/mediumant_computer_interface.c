@@ -33,6 +33,7 @@
 #include "errors.h"
 #include "reports.h"
 #include "robot_control.h"
+#include "robot_status.h"
 
 /** Parameters ****************************************************************/
 
@@ -105,8 +106,9 @@ void main()
         radioComTxService();
         usbComService();
 
-        usbCommandService();
-        reportsService();
-        robotControlService();
+        usbCommandService();   // USB in
+        robotStatusService();  // Radio in
+        reportsService();      // USB out
+        robotControlService(); // Radio out
     }
 }

@@ -38,6 +38,8 @@
         "stdarg.h": "c",
         "com.h": "c",
         "reports.h": "c",
-        "ostream": "c"
+        "ostream": "c",
+        "time.h": "c",
+        "cc2511_types.h": "c"
     }
 }

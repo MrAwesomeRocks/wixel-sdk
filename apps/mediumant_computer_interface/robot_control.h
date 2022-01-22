@@ -24,6 +24,9 @@ void setSpeed(uint8 speed);
 /** Set the robot's direction. */
 void setDirection(uint8 direction);
 
+/** Tell the robot controller about the moving state of the robot. */
+void setIsMoving(uint8 isMoving);
+
 /** Controlls the robot based on speed and direction. Should be called often. */
 void robotControlService();
 

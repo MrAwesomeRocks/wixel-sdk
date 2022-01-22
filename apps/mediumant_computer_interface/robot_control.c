@@ -30,6 +30,9 @@ uint8 robotSpeed = 10;
  */
 uint8 robotDirection = 0;
 
+/** Whether the robot says it's currently moving or not. */
+BIT robotIsMoving = 0;
+
 /* FUNCTIONS *****************************************************************/
 
 int putRobotCommand(int c)
@@ -54,6 +57,11 @@ void setDirection(uint8 direction)
     robotDirection = direction > 8 ? 0 : direction;
 }
 
+void setIsMoving(uint8 isMoving)
+{
+    robotIsMoving = isMoving != 0;
+}
+
 inline void stopRobot()
 {
     setDirection(0);
@@ -66,7 +74,8 @@ void robotControlService()
 
     // Send the commands to radio in chunks.
     if (robotCommandLength > 0) {
-        while (radioComTxAvailable() && robotCommandBytesSent < robotCommandLength) {
+        while (radioComTxAvailable() &&
+               robotCommandBytesSent < robotCommandLength) {
             radioComTxSendByte(robotCommandBuffer[robotCommandBytesSent]);
             robotCommandBytesSent++;
         }

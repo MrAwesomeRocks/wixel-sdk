@@ -1,4 +1,3 @@
-#include <radio_com.h>
 #include <stdio.h>
 #include <usb_com.h>
 
@@ -9,24 +8,24 @@
 /* GLOBAL VARIABLES ***********************************************************/
 
 /** The binary command byte received from the computer. */
-uint8 commandByte;
+static uint8 commandByte;
 
 /** The binary data bytes received from the computer. */
-uint8 dataBytes[32];
+static uint8 dataBytes[32];
 
 /** The number of data bytes we are waiting for to complete the current command.
  * If this is zero, it means we are not currently in the middle of processing
  * a binary command. */
-uint8 dataBytesLeft = 0;
+static uint8 dataBytesLeft = 0;
 
 /** The number of data bytes received so far for the current binary command.
  * If dataBytesLeft == 0, this is undefined. */
-uint8 dataBytesReceived;
+static uint8 dataBytesReceived;
 
 /* FUNCTIONS ******************************************************************/
 
-/** Execute a command received from the radio. */
-void executeCommand()
+/** Execute a command received from USB. */
+static void executeCommand()
 {
     switch (commandByte) {
 
@@ -50,7 +49,11 @@ void executeCommand()
             setSpeed(dataBytes[0]);
 
         case COMMAND_ECHO:
-            printf("Echo: 0x%X", dataBytes[0]);
+            printf("Echo: 0x%X\r\n", dataBytes[0]);
+
+            // Robot Echo
+            putRobotCommand(0xB0);
+            putRobotCommand(dataBytes[0]);
             break;
 
         case COMMAND_MOVE_LEGS:
@@ -70,14 +73,19 @@ void executeCommand()
             break;
 
         case COMMAND_GET_LEGS_POSITION:
+            // Not urgent, just dump the command in
+            putRobotCommand(0x82);
+            putRobotCommand(dataBytes[0]);
+            break;
+
         case COMMAND_IS_MOVING:
             // Not urgent, just dump the command in
-            putRobotCommand(commandByte - 0x20);
+            putRobotCommand(0x83);
             break;
     }
 }
 
-void processByte(uint8 byteReceived)
+static void processByte(uint8 byteReceived)
 {
     if (byteReceived & 0x80) {
         // Command byte
