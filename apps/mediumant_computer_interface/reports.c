@@ -40,41 +40,55 @@ int putchar(int c)
 void reportError(enum errorCode code)
 {
     if (param_terminal_colors) {
-        printf(B_RED WHT_B "ERROR!" RESET " Code 0x%X.\a\n\r", code);
+        printf(B_RED WHT_B "ERROR!" RESET " Code 0x%X.\a\r\n", code);
     } else {
-        printf("ERROR! Code 0x%X.\a\n\r", code);
+        printf("ERROR! Code 0x%X.\a\r\n", code);
     }
 
     switch (code) {
         case ERROR_UART_OVERFLOW:
-            printf("UART overflow!\n");
+            printf("UART overflow!");
             break;
 
         case ERROR_UART_FRAMING:
         case ERROR_UART_FRAMING_SEND:
-            printf("UART framing error!\n");
+            printf("UART framing error!");
             break;
 
         case ERROR_COMMAND_BYTE_IN_DATA:
-            printf("Command byte in data!\n");
+            printf("Command byte in data!");
             break;
 
         case ERROR_COMMAND_BYTE_INVALID:
-            printf("Invalid command byte!\n");
+            printf("Invalid command byte!");
             break;
 
-        case ERROR_DATA_BYTE_INVALID:
-            printf("Invalid data byte!\n");
+        case ERROR_COMMAND_DATA_BYTE_INVALID:
+            printf("Invalid command data byte!");
             break;
 
         case ERROR_LEG_NO_OUT_OF_RANGE:
-            printf("Leg number out of range!\n");
+            printf("Leg number out of range!");
+            break;
+
+        case ERROR_STATUS_BYTE_IN_DATA:
+            printf("Status byte in data!");
+            break;
+
+        case ERROR_INVALID_STATUS_BYTE:
+            printf("Invalid status byte!");
+            break;
+
+        case ERROR_STATUS_DATA_BYTE_INVALID:
+            printf("Invalid status data byte!");
             break;
 
         default:
-            printf("Unknown error!\n");
+            printf("Unknown error!");
             break;
     }
+
+    printf("\r\n");
 }
 
 void reportsService()
