@@ -72,7 +72,7 @@ void reportError(enum errorCode code)
             break;
 
         default:
-            printf("Uknown error!\n");
+            printf("Unknown error!\n");
             break;
     }
 }
