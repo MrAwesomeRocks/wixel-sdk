@@ -30,13 +30,24 @@ static int putResponse(int c)
 void reportServoPositions(uint8 legs)
 {
     putResponse(RESPONSE_COMMAND(COMMAND_GET_LEGS_POSITION));
+
+    // Set this byte later
+    uint16 numLegsBytePos = reportLength;
+    reportLength++;
+
+    uint8 numLegs = 0;
     for (uint8 i = 0; i < 6; i++) {
         if (legs & (1 << i)) {
+            numLegs++;
             uint16 legPosition = getLegPosition(i);
-            putResponse((legPosition >> 7 & 0x7F));   // First 7 bits
-            putResponse(legPosition & 0x7F); // Last 7 bits
+
+            putResponse(i);                         // Leg number
+            putResponse((legPosition >> 7) & 0x7F); // First 7 bits
+            putResponse(legPosition & 0x7F);        // Last 7 bits
         }
     }
+
+    report[numLegsBytePos] = numLegs;
 }
 
 void reportByte(uint8 prefix, uint8 byte)
