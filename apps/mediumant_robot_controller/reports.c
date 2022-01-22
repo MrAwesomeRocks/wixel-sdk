@@ -33,8 +33,8 @@ void reportServoPositions(uint8 legs)
     for (uint8 i = 0; i < 6; i++) {
         if (legs & (1 << i)) {
             uint16 legPosition = getLegPosition(i);
-            putResponse(legPosition >> 8);   // First 8 bits
-            putResponse(legPosition & 0xFF); // Last 8 bits
+            putResponse((legPosition >> 7 & 0x7F));   // First 7 bits
+            putResponse(legPosition & 0x7F); // Last 7 bits
         }
     }
 }

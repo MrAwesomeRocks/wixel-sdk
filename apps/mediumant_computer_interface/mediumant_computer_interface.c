@@ -30,6 +30,7 @@
 #include <uart1.h>
 
 #include "errors.h"
+#include "reports.h"
 
 /** Parameters ****************************************************************/
 
@@ -82,7 +83,6 @@ void updateLeds()
     LED_RED(errorOccurredRecently || uartRxDisabled);
 }
 
-
 void usbToRadioService()
 {
     // Data
@@ -115,5 +115,6 @@ void main()
         usbComService();
 
         usbToRadioService();
+        reportsService();
     }
 }

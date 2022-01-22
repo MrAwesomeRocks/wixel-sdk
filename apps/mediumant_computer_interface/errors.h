@@ -35,4 +35,18 @@ extern int32 CODE param_framing_error_ms;
  */
 extern BIT uartRxDisabled;
 
-#endif
+// Error codes
+enum errorCode {
+    // UART
+    ERROR_UART_OVERFLOW = 0x01,
+    ERROR_UART_FRAMING = 0x02,
+    ERROR_UART_FRAMING_SEND = 0x03,
+
+    // Command
+    ERROR_COMMAND_BYTE_IN_DATA = 0x10,
+    ERROR_COMMAND_BYTE_INVALID = 0x11,
+    ERROR_DATA_BYTE_INVALID = 0x12,
+    ERROR_LEG_NO_OUT_OF_RANGE = 0x13
+};
+
+#endif //__ERRORS_H__
