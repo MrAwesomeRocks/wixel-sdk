@@ -18,6 +18,7 @@
 #ifndef _WIXEL_TIME_H
 #define _WIXEL_TIME_H
 
+#include <cc2511_types.h>
 #include <cc2511_map.h>
 
 /*! Initializes the library.  This sets up Timer 4 to tick (approximately)

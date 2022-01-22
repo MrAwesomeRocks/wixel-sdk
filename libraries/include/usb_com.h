@@ -6,8 +6,9 @@
 #ifndef _USB_COM_H
 #define _USB_COM_H
 
-#include <time.h>
+#include <cc2511_types.h>
 #include <com.h>
+#include <time.h>
 
 typedef void (HandlerFunction)(void);
 
