@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <usb_com.h>
 
+#include "ansi.h"
 #include "commands.h"
 #include "errors.h"
 #include "robot_control.h"
@@ -49,7 +50,7 @@ static void executeCommand()
             setSpeed(dataBytes[0]);
 
         case COMMAND_ECHO:
-            printf("Echo: 0x%X\r\n", dataBytes[0]);
+            printf("Echo: 0x%X" LF, dataBytes[0]);
 
             // Robot Echo
             putRobotCommand(0xB0);

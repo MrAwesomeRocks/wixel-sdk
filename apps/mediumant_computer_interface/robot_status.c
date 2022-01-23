@@ -1,6 +1,7 @@
 #include <radio_com.h>
 #include <stdio.h>
 
+#include "ansi.h"
 #include "errors.h"
 #include "robot_control.h"
 #include "robot_status.h"
@@ -29,23 +30,23 @@ static void processStatus()
 {
     switch (statusByte) {
         case STATUS_LEG_POSITIONS:
-            printf("Leg positions:\r\n");
+            printf("Leg positions:" LF);
             for (uint8 i = 0; i < dataBytes[0]; i++) {
                 // Reconstruct the position
                 uint8 pos = (i * 3) + 1;
                 uint16 legPos = (dataBytes[pos + 1] << 7) | dataBytes[pos + 2];
 
-                printf("\tLeg %d: %d deg\r\n", dataBytes[pos], legPos);
+                printf("\tLeg %d: %d deg" LF, dataBytes[pos], legPos);
             }
             break;
 
         case STATUS_IS_MOVING:
             setIsMoving(dataBytes[0]);
-            printf("Moving: %d\r\n", dataBytes[0]);
+            printf("Moving: %d" LF, dataBytes[0]);
             break;
 
         case STATUS_ECHO:
-            printf("Robot Echo: 0x%X\r\n", dataBytes[0]);
+            printf("Robot Echo: 0x%X" LF, dataBytes[0]);
             break;
 
         case STATUS_ERROR:
@@ -60,7 +61,7 @@ static void processByte(uint8 byteReceived)
 
     if (waitingForPrintData) {
         // Just got our print data
-        printf("Robot: 0x%X\r\n", byteReceived);
+        printf("Robot: 0x%X" LF, byteReceived);
         waitingForPrintData = 0;
     } else {
         if (byteReceived == STATUS_PRINT) {

@@ -80,7 +80,8 @@
 #define BH_CYN "\e[1;96m"
 #define BH_WHT "\e[1;97m"
 
-// Reset
+// Misc
 #define RESET "\e[0m"
+#define LF "\r\n"
 
 #endif // __ANSI_H__

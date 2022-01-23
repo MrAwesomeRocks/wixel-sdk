@@ -1,5 +1,5 @@
-#include "reports.h"
 #include "ansi.h"
+#include "reports.h"
 
 #include <stdio.h>
 #include <usb_com.h>
@@ -57,9 +57,9 @@ int putchar(int c)
 void reportError(enum errorCode code)
 {
     if (param_terminal_colors) {
-        printf(B_RED WHT_B "ERROR!" RESET " Code 0x%X.\a\r\n", code);
+        printf(B_RED WHT_B "ERROR!" RESET " Code 0x%X.\a" LF, code);
     } else {
-        printf("ERROR! Code 0x%X.\a\r\n", code);
+        printf("ERROR! Code 0x%X.\a" LF, code);
     }
 
     switch (code) {
@@ -113,7 +113,7 @@ void reportError(enum errorCode code)
             break;
     }
 
-    printf("\r\n");
+    printf(LF);
 }
 
 void reportsService()

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <wixel.h>
 
+#include "ansi.h"
 #include "robot_control.h"
 
 /* GLOBAL VARIABLES **********************************************************/
@@ -92,10 +93,10 @@ void robotControlService()
 
         if (robotIsMoving) {
             // Poll to see if the robot is still moving
-            printf("P");
+            printf("P" LF);
             putRobotCommand(0x83);
         } else {
-            printf("C");
+            printf("C" LF);
             // Not moving and command buffer empty, send command!
             putRobotCommand(0x81); // Set leg positions
             putRobotCommand(6);    // All 6 legs - TODO OPTIMIZE
@@ -122,7 +123,7 @@ void robotControlService()
 
             commandSequenceStep++;
             if (commandSequenceStep >= 6) commandSequenceStep = 0;
-            printf("Seq: %d", commandSequenceStep);
+            printf("Seq: %d" LF, commandSequenceStep);
         }
     }
 
