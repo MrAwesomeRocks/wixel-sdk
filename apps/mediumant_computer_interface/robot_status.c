@@ -41,11 +41,11 @@ static void processStatus()
 
         case STATUS_IS_MOVING:
             setIsMoving(dataBytes[0]);
-            printf("Moving: %d", dataBytes[0]);
+            printf("Moving: %d\r\n", dataBytes[0]);
             break;
 
         case STATUS_ECHO:
-            printf("Robot Echo: 0x%X", dataBytes[0]);
+            printf("Robot Echo: 0x%X\r\n", dataBytes[0]);
             break;
 
         case STATUS_ERROR:
