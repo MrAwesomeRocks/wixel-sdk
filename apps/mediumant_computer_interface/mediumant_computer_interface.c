@@ -39,6 +39,7 @@
 
 int32 CODE param_framing_error_ms = 0;
 int32 CODE param_terminal_colors = 0;
+int32 CODE param_robot_update_ms = 1000;
 
 /** Global Variables **********************************************************/
 

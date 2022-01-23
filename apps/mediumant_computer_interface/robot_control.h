@@ -30,4 +30,7 @@ void setIsMoving(uint8 isMoving);
 /** Controlls the robot based on speed and direction. Should be called often. */
 void robotControlService();
 
+/** How often to update the robot (in milleseconds). */
+extern int32 CODE param_robot_update_ms;
+
 #endif // __ROBOT_CONTROL_H__

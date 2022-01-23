@@ -1,4 +1,6 @@
 #include <radio_com.h>
+#include <stdio.h>
+#include <wixel.h>
 
 #include "robot_control.h"
 
@@ -33,6 +35,16 @@ uint8 robotDirection = 0;
 /** Whether the robot says it's currently moving or not. */
 BIT robotIsMoving = 0;
 
+/** The sequence of movements for the robot. */
+uint16 CODE walkSequence[6][6] = {
+    {10, 160, 10, 160, 10, 160},    {160, 160, 160, 160, 160, 160},
+    {160, 280, 160, 280, 160, 280}, {160, 10, 160, 10, 160, 10},
+    {160, 160, 160, 160, 160, 160}, {280, 160, 280, 160, 280, 160},
+};
+
+/** Where we are in our command sequence. */
+uint8 DATA commandSequenceStep = 0;
+
 /* FUNCTIONS *****************************************************************/
 
 int putRobotCommand(int c)
@@ -45,6 +57,7 @@ int putRobotCommand(int c)
 inline void clearRobotCommandBuffer()
 {
     robotCommandLength = 0;
+    robotCommandBytesSent = 0;
 }
 
 void setSpeed(uint8 speed)
@@ -70,7 +83,48 @@ inline void stopRobot()
 
 void robotControlService()
 {
-    // TODO: Generate a sequence to have the robot walk
+    static uint32 lastRobotUpdate;
+    // static uint8 prevLegPositions[6];
+
+    if (getMs() - lastRobotUpdate >= param_robot_update_ms &&
+        robotCommandLength == 0) {
+        lastRobotUpdate = getMs();
+
+        if (robotIsMoving) {
+            // Poll to see if the robot is still moving
+            printf("P");
+            putRobotCommand(0x83);
+        } else {
+            printf("C");
+            // Not moving and command buffer empty, send command!
+            putRobotCommand(0x81); // Set leg positions
+            putRobotCommand(6);    // All 6 legs - TODO OPTIMIZE
+
+            // Set this byte later
+            // uint8 numLegsBytePos = robotCommandLength;
+            // robotCommandLength++;
+
+            // uint8 numLegsChanged = 0;
+            for (uint8 i = 0; i < 6; i++) {
+                uint16 legPos = walkSequence[commandSequenceStep][i];
+                // if (prevLegPositions[i] != legPos) {
+                // Update
+                // prevLegPositions[i] = legPos;
+                // numLegsChanged++;
+
+                putRobotCommand(i);                    // Leg number
+                putRobotCommand((legPos >> 7) & 0x7F); // First 7 bits
+                putRobotCommand(legPos & 0x7F);        // Last 7 bits
+                // }
+            }
+
+            // robotCommandBuffer[numLegsBytePos] = numLegsChanged;
+
+            commandSequenceStep++;
+            if (commandSequenceStep >= 6) commandSequenceStep = 0;
+            printf("Seq: %d", commandSequenceStep);
+        }
+    }
 
     // Send the commands to radio in chunks.
     if (robotCommandLength > 0) {
@@ -82,8 +136,7 @@ void robotControlService()
 
         if (robotCommandBytesSent == robotCommandLength) {
             // We've sent the whole report
-            robotCommandLength = 0;
-            robotCommandBytesSent = 0;
+            clearRobotCommandBuffer();
         }
     }
 }

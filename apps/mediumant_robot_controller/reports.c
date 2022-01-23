@@ -1,14 +1,16 @@
 #include "reports.h"
 #include "commands.h"
+#include "errors.h"
 
 #include <radio_com.h>
 #include <stdarg.h>
 
 /* GLOBAL VARIABLES ***********************************************************/
+#define REPORT_MAX_SIZE 512
 
 // A big buffer for holding a report.  This allows us to print more than
 // 128 bytes at a time to radio.
-uint8 XDATA report[512];
+uint8 XDATA report[REPORT_MAX_SIZE];
 
 // The length (in bytes) of the report currently in the report buffer.
 // If zero, then there is no report in the buffer.
@@ -20,10 +22,21 @@ uint16 DATA reportBytesSent = 0;
 
 /* FUNCTIONS ******************************************************************/
 
+inline void clearReportBuffer()
+{
+    reportBytesSent = 0;
+    reportLength = 0;
+}
+
 static int putResponse(int c)
 {
-    report[reportLength] = c;
-    reportLength++;
+    if (reportLength < REPORT_MAX_SIZE - 1) {
+        report[reportLength] = c;
+        reportLength++;
+    } else {
+        clearReportBuffer();
+        errorOccurred(0x31);
+    }
     return (uint8)c;
 }
 

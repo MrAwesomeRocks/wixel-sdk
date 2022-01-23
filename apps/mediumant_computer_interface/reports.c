@@ -5,10 +5,11 @@
 #include <usb_com.h>
 
 /* VARIABLES ******************************************************************/
+#define REPORT_MAX_LEN 1024
 
 // A big buffer for holding a report.  This allows us to print more than
 // 128 bytes at a time to USB.
-uint8 XDATA report[1024];
+uint8 XDATA report[REPORT_MAX_LEN];
 
 // The length (in bytes) of the report currently in the report buffer.
 // If zero, then there is no report in the buffer.
@@ -20,19 +21,35 @@ uint16 DATA reportBytesSent = 0;
 
 /* FUNCTIONS ******************************************************************/
 
+inline void clearReportBuffer()
+{
+    reportBytesSent = 0;
+    reportLength = 0;
+}
+
 // This gets called by puts, printf, and printBar to populate
 // the report buffer.  The result is sent to USB later.
 #ifdef OLD_PUTCHAR
 void putchar(char c)
 {
-    report[reportLength] = c;
-    reportLength++;
+    if (reportLength < REPORT_MAX_LEN - 1) {
+        report[reportLength] = c;
+        reportLength++;
+    } else {
+        clearReportBuffer();
+        errorOccurred(ERROR_REPORT_BUFFER_OVERFLOW);
+    }
 }
 #else
 int putchar(int c)
 {
-    report[reportLength] = c;
-    reportLength++;
+    if (reportLength < REPORT_MAX_LEN - 1) {
+        report[reportLength] = c;
+        reportLength++;
+    } else {
+        clearReportBuffer();
+        errorOccurred(ERROR_REPORT_BUFFER_OVERFLOW);
+    }
     return (uint8)c;
 }
 #endif
@@ -83,6 +100,14 @@ void reportError(enum errorCode code)
             printf("Invalid status data byte!");
             break;
 
+        case ERROR_REPORT_BUFFER_OVERFLOW:
+            printf("Report buffer overflow!");
+            break;
+
+        case ERROR_ROBOT_REPORT_BUFFER_OVERFLOW:
+            printf("Robot report buffer overflow!");
+            break;
+
         default:
             printf("Unknown error!");
             break;
@@ -100,7 +125,7 @@ void reportsService()
             // Send the last part of the report.
             usbComTxSend(report + reportBytesSent,
                          reportLength - reportBytesSent);
-            reportLength = 0;
+            clearReportBuffer();
         } else {
             usbComTxSend(report + reportBytesSent, bytesToSend);
             reportBytesSent += bytesToSend;

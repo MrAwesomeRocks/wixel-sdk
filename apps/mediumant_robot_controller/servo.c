@@ -61,6 +61,7 @@ static int putCommand(int c)
 inline void clearServoCommandBuffer()
 {
     servoCommandLength = 0;
+    servoCommandBytesSent = 0;
 }
 
 inline void stopAllServos()
@@ -168,7 +169,7 @@ void servoService()
             // Send the last part of the report
             uart1TxSend(servoCommandBuffer + servoCommandBytesSent,
                         servoCommandLength - servoCommandBytesSent);
-            servoCommandLength = 0;
+            clearServoCommandBuffer();
         } else {
             // Send a chunk of the report
             uart1TxSend(servoCommandBuffer + servoCommandBytesSent,

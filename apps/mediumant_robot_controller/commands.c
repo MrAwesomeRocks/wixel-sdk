@@ -111,7 +111,7 @@ void processByte(uint8 byteReceived)
         } else {
             dataBytesLeft--;
         }
-        PRINT(dataBytesLeft);
+        // PRINT(dataBytesLeft);
 
         if (dataBytesLeft == 0) {
             // Received last byte

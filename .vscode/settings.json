@@ -40,7 +40,8 @@
         "reports.h": "c",
         "ostream": "c",
         "time.h": "c",
-        "cc2511_types.h": "c"
+        "cc2511_types.h": "c",
+        "gpio.h": "c"
     },
     "files.exclude": {
         "**/*.adb": true,
