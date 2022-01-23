@@ -120,6 +120,7 @@ void robotControlService()
             }
 
             // robotCommandBuffer[numLegsBytePos] = numLegsChanged;
+            robotIsMoving = 1;
 
             commandSequenceStep++;
             if (commandSequenceStep >= 6) commandSequenceStep = 0;
