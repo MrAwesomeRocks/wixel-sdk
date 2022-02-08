@@ -1,0 +1,40 @@
+{
+    "configurations": [
+        {
+            "name": "Wixel",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:\\Program Files\\SDCC\\include\\**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "__VSC_PARSER__",
+                "UNICODE",
+                "_UNICODE",
+                "__data=",
+                "__near=",
+                "__idata=",
+                "__xdata=",
+                "__far=",
+                "__pdata=",
+                "__code=",
+                "__bit=_Bool",
+                "__sfr=volatile unsigned char",
+                "__sfr16=volatile unsigned char",
+                "__sfr32=volatile unsigned char",
+                "__sbit=volatile _Bool",
+                "__critical=",
+                "__at(x)=",
+                "__using(x)=",
+                "__interrupt(x)=",
+                "__naked=",
+                "__reentrant="
+            ],
+            "compilerPath": "C:\\Program Files\\SDCC\\bin\\sdcc.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++98",
+            "intelliSenseMode": "windows-gcc-x64"
+        }
+    ],
+    "version": 4
+}
