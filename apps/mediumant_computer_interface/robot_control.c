@@ -37,8 +37,10 @@ uint8 robotDirection = 0;
 BIT robotIsMoving = 0;
 
 /** The sequence of movements for the robot. */
-uint16 CODE walkSequence[6][6] = {
-    {10, 160, 10, 160, 10, 160},    {160, 160, 160, 160, 160, 160},
+#define SEQUENCE_LENGTH 6
+uint16 CODE walkSequence[6][SEQUENCE_LENGTH] = {
+    {10, 160, 10, 160, 10, 160},
+    {160, 160, 160, 160, 160, 160},
     {160, 280, 160, 280, 160, 280}, {160, 10, 160, 10, 160, 10},
     {160, 160, 160, 160, 160, 160}, {280, 160, 280, 160, 280, 160},
 };
@@ -123,7 +125,7 @@ void robotControlService()
             robotIsMoving = 1;
 
             commandSequenceStep++;
-            if (commandSequenceStep >= 6) commandSequenceStep = 0;
+            if (commandSequenceStep >= SEQUENCE_LENGTH) commandSequenceStep = 0;
             printf("Seq: %d" LF, commandSequenceStep);
         }
     }
