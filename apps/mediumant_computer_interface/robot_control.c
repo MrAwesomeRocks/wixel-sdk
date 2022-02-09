@@ -31,13 +31,14 @@ uint8 robotSpeed = 10;
  * 7 = left
  * 8 = forwards-left
  */
-uint8 robotDirection = 0;
+uint8 robotDirection = 1;
 
 /** Whether the robot says it's currently moving or not. */
 BIT robotIsMoving = 0;
 
 /** The sequence of movements for the robot. */
 #define SEQUENCE_LENGTH 6
+// clang-format off
 uint16 CODE walkSequence[6][SEQUENCE_LENGTH] = {
     {10, 160, 10, 160, 10, 160},
     {160, 160, 160, 160, 160, 160},
@@ -46,6 +47,7 @@ uint16 CODE walkSequence[6][SEQUENCE_LENGTH] = {
     {160, 160, 160, 160, 160, 160},
     {280, 160, 280, 160, 280, 160},
 };
+// clang-format on
 
 /** Where we are in our command sequence. */
 uint8 DATA commandSequenceStep = 0;
@@ -91,8 +93,10 @@ void robotControlService()
     static uint32 lastRobotUpdate;
     // static uint8 prevLegPositions[6];
 
-    if (getMs() - lastRobotUpdate >= param_robot_update_ms &&
-        robotCommandLength == 0) {
+    if (getMs() - lastRobotUpdate >= param_robot_update_ms && // Time to update
+        robotCommandLength == 0 && // Room for new commands
+        robotDirection != 0        // Robot isn't stopped
+    ) {
         lastRobotUpdate = getMs();
 
         if (robotIsMoving) {

@@ -58,7 +58,7 @@ static void executeCommand()
             break;
 
         case COMMAND_MOVE_LEGS:
-            clearRobotCommandBuffer(); // Probably a good idea to get instant
+            clearRobotCommandBuffer(); // Probably a good idea to get instant 
             stopRobot();               // feedback
 
             putRobotCommand(0x81);
